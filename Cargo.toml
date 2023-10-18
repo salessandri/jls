@@ -1,0 +1,14 @@
+[package]
+name = "jls"
+authors = ["Santiago Alessandri"]
+description = "Implementation of the simple JSON Licensing Scheme for issuing and/or verifying licenses"
+license = "MIT"
+categories = ["authentication", "config", "cryptography"]
+keywords = ["licensing"]
+
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
