@@ -1,4 +1,4 @@
-mod verification;
+pub mod verification;
 
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};

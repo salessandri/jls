@@ -212,4 +212,93 @@ mod tests {
         };
         assert_eq!(error, LicenseVerifierError::KeyTypeNotSupported);
     }
+
+    #[test]
+    fn license_verification_with_invalid_input() {
+        let invalid_input = serde_json::json!({
+            "random": "ABC",
+            "someOtherField": 123456,
+        });
+
+        let verifier = LicenseVerifier::new(PUBLIC_KEY_JWK_JSON.clone())
+            .expect("Verifier instantiation must work");
+
+        let result = verifier.verify(invalid_input);
+        let Err(error) = result else {
+            panic!("An error was expected")
+        };
+        assert_eq!(error, LicenseVerificationError::InvalidVerifiableLicense);
+    }
+
+    #[test]
+    fn license_verification_with_non_jws_validation() {
+        let invalid_input = serde_json::json!({
+            "license": {
+                "id": "0b5b88f5-a264-4f90-8406-50b01d9515c8",
+                "expirationDate": "2024-10-01T00:00:00Z",
+                "customData": {
+                    "owner": "John Doe"
+                }
+            },
+            "licenseValidation": {
+                "payload": "eyJpZCI6IjBiNWI4OGY1LWEyNjQtNGY5MC04NDA2LTUwYjAxZDk1MTVjOCIsImV4cGlyYXRpb25E\
+                    YXRlIjoiMjAyNC0xMC0wMVQwMDowMDowMFoiLCJjdXN0b21EYXRhIjp7Im93bmVyIjoiSm9obiBEb2UifX0",
+                "protected": "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9",
+                "signatura": "EZh1khxXXnB8bKNS5PZAOReIZ7OF0hoII5Xp-cpj6L5vwtLUOKRQAgiYymnZZDveYtzVrFyW4H\
+                    oFtmZDQgoCy0n8G1grhhg0WCd9-WZ2iEIo8xEEPAUHqyD2r_UHFnJejbJZLoNfe4IFEtU_xSJ8dpVQqCxPHE\
+                    Mmngtio6Aedqh9JF7pNbjlBYmWewj59otEGvbvQR_-odKO78HM-oEVpaix3h3RPAfIpiKhijrUDBQ208PKi_\
+                    NV3I3ALagu2k6HT38WzUwiy793j9CfTQhUQfsC3YyoED_Ku-buGKzo8i5DUxhSgAAmU79GXQFraD-qV_dIz4\
+                    oGYPDIga2QUk-tpaAfVvu04LxZB-GtyH8_9vf7dXaxDULM5Jsm68aaCKhc1V7_cHKKkHkvP5YLZauX0ZajUa\
+                    cIbn2s9n36e_FB2ty4yx9aA7Na2HzDYYf10WsLahuseU5LxDQv1KysoccOZdA4ifTTtshld_hlNMxAizvgcw\
+                    sEkjfAJP_QnHhjQ0r912JYqItczTmr3tbiYWR7Xw_y02Hz4JVqEs4qTO4oFIqhLREdoldf_MP7dFBoiPUJmN\
+                    5r1zyQ6MGwdYTHNzX5zR9YUg2tDXskQeyOGoPqaCdWHr8Kofd4PboLX48sYf18mdGGwMotdDKTytZCyTTswN\
+                    YFlaTtKNZYz5UZ6J-blx4"
+            }
+        });
+
+        let verifier = LicenseVerifier::new(PUBLIC_KEY_JWK_JSON.clone())
+            .expect("Verifier instantiation must work");
+
+        let result = verifier.verify(invalid_input);
+        let Err(error) = result else {
+            panic!("An error was expected")
+        };
+        assert_eq!(error, LicenseVerificationError::InvalidVerifiableLicense);
+    }
+
+    #[test]
+    fn license_verification_with_tampered_license() {
+        let tampered_license = serde_json::json!({
+            "license": {
+                "id": "0b5b88f5-a264-4f90-8406-50b01d9515c8",
+                "expirationDate": "2025-10-01T00:00:00Z",
+                "customData": {
+                    "owner": "John Doe"
+                }
+            },
+            "licenseValidation": {
+                "payload": "eyJpZCI6IjBiNWI4OGY1LWEyNjQtNGY5MC04NDA2LTUwYjAxZDk1MTVjOCIsImV4cGlyYXRpb25E\
+                    YXRlIjoiMjAyNC0xMC0wMVQwMDowMDowMFoiLCJjdXN0b21EYXRhIjp7Im93bmVyIjoiSm9obiBEb2UifX0",
+                "protected": "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9",
+                "signature": "EZh1khxXXnB8bKNS5PZAOReIZ7OF0hoII5Xp-cpj6L5vwtLUOKRQAgiYymnZZDveYtzVrFyW4H\
+                    oFtmZDQgoCy0n8G1grhhg0WCd9-WZ2iEIo8xEEPAUHqyD2r_UHFnJejbJZLoNfe4IFEtU_xSJ8dpVQqCxPHE\
+                    Mmngtio6Aedqh9JF7pNbjlBYmWewj59otEGvbvQR_-odKO78HM-oEVpaix3h3RPAfIpiKhijrUDBQ208PKi_\
+                    NV3I3ALagu2k6HT38WzUwiy793j9CfTQhUQfsC3YyoED_Ku-buGKzo8i5DUxhSgAAmU79GXQFraD-qV_dIz4\
+                    oGYPDIga2QUk-tpaAfVvu04LxZB-GtyH8_9vf7dXaxDULM5Jsm68aaCKhc1V7_cHKKkHkvP5YLZauX0ZajUa\
+                    cIbn2s9n36e_FB2ty4yx9aA7Na2HzDYYf10WsLahuseU5LxDQv1KysoccOZdA4ifTTtshld_hlNMxAizvgcw\
+                    sEkjfAJP_QnHhjQ0r912JYqItczTmr3tbiYWR7Xw_y02Hz4JVqEs4qTO4oFIqhLREdoldf_MP7dFBoiPUJmN\
+                    5r1zyQ6MGwdYTHNzX5zR9YUg2tDXskQeyOGoPqaCdWHr8Kofd4PboLX48sYf18mdGGwMotdDKTytZCyTTswN\
+                    YFlaTtKNZYz5UZ6J-blx4"
+            }
+        });
+
+        let verifier = LicenseVerifier::new(PUBLIC_KEY_JWK_JSON.clone())
+            .expect("Verifier instantiation must work");
+
+        let result = verifier.verify(tampered_license);
+        let Err(error) = result else {
+            panic!("An error was expected")
+        };
+        assert_eq!(error, LicenseVerificationError::TamperedLicense);
+    }
 }
