@@ -1,14 +1,22 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+mod verification;
+
+use chrono::{DateTime, Utc};
+use serde_derive::{Deserialize, Serialize};
+use serde_json;
+use uuid::Uuid;
+
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
+pub struct License {
+    pub id: Uuid,
+    #[serde(rename = "expirationDate")]
+    pub expiration_date: DateTime<Utc>,
+    #[serde(rename = "customData")]
+    pub custom_data: serde_json::Value,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct VerifiableLicense {
+    license: License,
+    #[serde(rename = "licenseValidation")]
+    license_validation: serde_json::Value,
 }
