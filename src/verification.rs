@@ -42,9 +42,9 @@ impl LicenseVerifier {
             return Err(LicenseVerifierError::KeyTypeNotSupported);
         }
 
-        return Ok(Self {
+        Ok(Self {
             rsa_public_key: rsa_key,
-        });
+        })
     }
 
     pub fn verify(

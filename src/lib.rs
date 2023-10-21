@@ -2,7 +2,7 @@ pub mod verification;
 
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};
-use serde_json;
+
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
