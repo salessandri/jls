@@ -5,6 +5,8 @@ description = "Implementation of the simple JSON Licensing Scheme for issuing an
 license = "MIT"
 categories = ["authentication", "config", "cryptography"]
 keywords = ["licensing"]
+homepage = "https://github.com/salessandri/jls"
+repository = "https://github.com/salessandri/jls"
 
 version = "0.1.0"
 edition = "2021"
